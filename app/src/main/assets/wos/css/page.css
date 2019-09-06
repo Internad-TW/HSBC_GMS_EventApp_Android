@@ -1,0 +1,23 @@
+body {
+    -webkit-touch-callout: none;
+    -webkit-user-drag: none;
+    -webkit-user-modify: none;
+    -webkit-user-select: none;
+    user-select: none;
+    text-size-adjust: none;
+}
+
+div.spa_page {
+    overflow: -moz-hidden-unscrollable;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    overflow-y: auto;
+    -ms-overflow-style: none;
+}
+
+div.spa_page::-webkit-scrollbar { 
+    display: none; 
+}

@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "380522198739",
+    "firebase_url": "https://gms-event-app.firebaseio.com",
+    "project_id": "gms-event-app",
+    "storage_bucket": "gms-event-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:380522198739:android:a5e145f175604dfc060626",
+        "android_client_info": {
+          "package_name": "hk.internad.gms"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "380522198739-si8l36tc94st1dtdj9gcj1p30vaq4dun.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "hk.internad.gms",
+            "certificate_hash": "8d20192f7cb776042e16d7e80111cc7a2ffcf2f4"
+          }
+        },
+        {
+          "client_id": "380522198739-0glb61j2arin53m3ag5g6bea2qsmlf95.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBEALkNiojmOuTXBp_VwuLmsxSrQiWMmUc"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "380522198739-0glb61j2arin53m3ag5g6bea2qsmlf95.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "380522198739-usvthvjhle179hl0ku16j5bin254ag4m.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "hk.internad.gms"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

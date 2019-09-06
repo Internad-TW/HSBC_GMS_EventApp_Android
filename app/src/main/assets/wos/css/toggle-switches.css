@@ -1,0 +1,83 @@
+@charset "utf-8";
+/* CSS Document */
+
+.md_switch {
+  display: inline-flex;
+  align-items: center;
+  margin: 5px 0;
+}
+
+.md_switch .md_switch__toggle {
+  position: relative;
+  cursor: pointer;
+}
+
+.md_switch [type=checkbox] {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* default states */
+
+.md_switch .md_switch__toggle::before,
+.md_switch .md_switch__toggle::after {
+  content: '';
+  display: block;
+  margin: 0 3px;
+  transition: all 100ms cubic-bezier(0.4, 0.0, 0.2, 1);
+  background: #BDBDBD;
+}
+
+.md_switch .md_switch__toggle::before {
+  height: 0.75em;
+  width: 2.3em;
+  border-radius: 0.65em;
+  opacity: 0.6;
+}
+
+.md_switch .md_switch__toggle::after {
+  position: absolute;
+  top: 50%;
+  transform: translate(0, -50%);
+  height: 1.3em;
+  width: 1.3em;
+  border-radius: 50%;
+/*  box-shadow: 0 0 8px rgba(0,0,0,0.2), 0 0 2px rgba(0,0,0,0.4);*/
+}
+
+/* special states */
+.md_switch [type=checkbox]:focus+.md_switch__toggle {
+/*  outline: #5d9dd5 solid 1px;
+  box-shadow: 0 0 8px #5e9ed6;*/
+  
+/*remove the background blue highlight*/
+  outline: 0;
+-webkit-user-select: none;
+-moz-user-select: none;
+-ms-user-select: none;
+user-select: none;
+-webkit-tap-highlight-color: transparent;
+}
+
+.md_switch [type=checkbox]:disabled+.md_switch__toggle {
+  cursor: not-allowed;
+  filter: grayscale(100%);
+  opacity: 0.6;
+}
+
+.md_switch [type=checkbox]:disabled+.md_switch__toggle::after {
+  box-shadow: none;
+}
+
+/* checked states */
+
+.md_switch [type=checkbox]:checked+.md_switch__toggle::before,
+.md_switch [type=checkbox]:checked+.md_switch__toggle::after{
+  background: #00897B;
+}
+
+.md_switch [type=checkbox]:checked+.md_switch__toggle::after {
+  transform: translate(calc(2.3em - 100%), -50%);
+}
+

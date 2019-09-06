@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="format-detection" content="email=no" />
+    <meta http-equiv="cache-control" content="no-cache" />
+    <meta http-equiv="expires" content="0" />
+    <title>Event App</title>
+    <link rel="stylesheet" type="text/css" href="css/normalize.css" />
+    <link rel="stylesheet" type="text/css" href="css/style.css" />
+    <link rel="stylesheet" type="text/css" href="css/page.css" />
+  </head>
+
+  <body class="bg_image02">
+    <div class="paddinglr30">
+      <div class="text_center margintop60px">
+        <img src="image/logo_big.fw.png" alt="HSBC logo" class="login_logo" />
+        <div class="login_title01" data-lang="title">HSBC Hospitality</div>
+        <img src="image/icon_correct.fw.png" alt="Correct" class="icon_alert margintop20px" />
+        <div class="login_message" data-lang="login_success">Success</div>
+      </div>
+    </div>
+
+    <div class="footer_btn btn_red" onclick="location.href = 'download_db.html';">
+      <p data-lang="done">Done</p>
+    </div>
+
+    <script src="js/common.js"></script>
+    <script src="js/language.js"></script>
+    <script src="js/device.js"></script>
+    <script src="js/active.js"></script>
+    <script>
+      document.addEventListener("DOMContentLoaded", function() {
+        Common.setUILanguage("login");
+        localStorage.removeItem("DownloadDbMd5");
+        localStorage.removeItem("Notifications");
+        localStorage.removeItem("EventLangs");
+        localStorage.removeItem("GuestName");
+      });
+    </script>
+  </body>
+</html>

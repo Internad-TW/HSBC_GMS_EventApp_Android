@@ -1,0 +1,13 @@
+div#AlertScreen {
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    z-index: 1000;
+    background-color: rgba(0,0,0,0.7);
+}
+
+div#AlertScreen div.lineheight135per {
+    word-break: break-word;
+}
