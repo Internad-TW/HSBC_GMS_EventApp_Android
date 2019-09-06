@@ -36,16 +36,17 @@ public class Common {
                     if (!file.exists()) {
                         file.getParentFile().mkdirs();
                         file.createNewFile();
-                        FileOutputStream fos = new FileOutputStream(file);
-                        byte[] buffer = new byte[1024];
-                        int byteCount = 0;
-                        while ((byteCount = is.read(buffer)) != -1) {
-                            fos.write(buffer, 0, byteCount);
-                        }
-                        fos.flush();
-                        is.close();
-                        fos.close();
                     }
+                    FileOutputStream fos = new FileOutputStream(file);
+                    byte[] buffer = new byte[1024];
+                    int byteCount = 0;
+                    while ((byteCount = is.read(buffer)) != -1) {
+                        fos.write(buffer, 0, byteCount);
+                    }
+                    fos.flush();
+                    is.close();
+                    fos.close();
+
 
                 } catch (Exception e) {   }
             }
@@ -57,12 +58,14 @@ public class Common {
 
     }
 
-
-
     public static void writeFile(String filePath,String data){
 
         try {
             File file = new File(filePath);
+            if (!file.exists()) {
+                file.getParentFile().mkdirs();
+                file.createNewFile();
+            }
             FileOutputStream outputStream = new FileOutputStream(file);
             outputStream.write(data.getBytes());
             outputStream.close();
@@ -143,6 +146,7 @@ public class Common {
 
             fout.close();
             zis.closeEntry();
+            Log.e("unpackZip", filename);
         }
 
         zis.close();

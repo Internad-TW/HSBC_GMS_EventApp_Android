@@ -57,9 +57,9 @@ public class MainActivity extends Activity {
     }
 
     private void copyHtml(){
-        File file = new File(dataPath + "/wos/active.js");
+        File file = new File(dataPath + "/wos/js/active.js");
         if (!file.exists()) {
-            writeFile(dataPath + "/wos/active.js","var __activeInfo = { \"token\": \"\", \"expiry_date\": \"\" };");
+            writeFile(dataPath + "/wos/js/active.js","var __activeInfo = { \"token\": \"\", \"expiry_date\": \"\" };");
         }
 
         if (getVersionCode() != getAppCode()){
@@ -167,21 +167,25 @@ public class MainActivity extends Activity {
 
 
 
-    public long getVersionCode(){
-        PackageManager packageManager=getPackageManager();
-        PackageInfo packageInfo;
-        long versionCode=0;
+    public long getVersionCode() {
+        long appVersionCode = 0;
         try {
-            packageInfo=packageManager.getPackageInfo(getPackageName(),0);
-            versionCode=packageInfo.getLongVersionCode();
+            PackageInfo packageInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+                appVersionCode = packageInfo.getLongVersionCode();
+            } else {
+                appVersionCode = packageInfo.versionCode;
+            }
         } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
+            Log.e("", e.getMessage());
         }
-        return versionCode;
+        return appVersionCode;
     }
 
+
     public long getAppCode(){
-        return Long.valueOf(readFile(dataPath + "/wos/appCode.txt") );
+        String AppCode =readFile(dataPath + "/wos/appCode.txt");
+        return Long.valueOf(AppCode == ""? "0" :AppCode);
     }
 
     public void setAppcode(long appcode){
@@ -209,8 +213,6 @@ public class MainActivity extends Activity {
                 URLConnection conn = url.openConnection();
                 InputStream is = conn.getInputStream();
                 int contentLength = conn.getContentLength();
-                Log.e("download", "contentLength = " + contentLength);
-
                 File file1 = new File(fileName);
                 if (file1.exists()) {
                     file1.delete();
@@ -225,8 +227,6 @@ public class MainActivity extends Activity {
                     BufferSize += len;
                     publishProgress(String.valueOf((BufferSize * 100) / contentLength));
                 }
-                onProgressUpdate();
-                Log.e("download", "download-finish");
                 os.close();
                 is.close();
                 unpackZip(dataPath + "/wos/data/","db.zip");
@@ -245,7 +245,7 @@ public class MainActivity extends Activity {
 
         @Override
         protected void onPostExecute(String result) {
-            webview.evaluateJavascript("javascript:doAfterDownloadZip(" + result +")", null );
+            webview.evaluateJavascript("javascript:doAfterDownloadZip('" + result +"')", null );
         }
 
     }
