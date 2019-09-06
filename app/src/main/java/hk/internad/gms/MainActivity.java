@@ -54,12 +54,6 @@ public class MainActivity extends Activity {
         writeDeviceJS();
         writeNotificationJS();
         webview.loadUrl("file:///"+ dataPath + "/wos/login.html");
-/*        int permission = ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_CONTACTS);
-        if (permission != PackageManager.PERMISSION_GRANTED) {
-            //未取得權限，向使用者要求允許權限
-            ActivityCompat.requestPermissions( this, new String[]{READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE}, EXTERNAL_STORAGE_REQUEST );
-        }*/
-
     }
 
     private void copyHtml(){
@@ -117,21 +111,6 @@ public class MainActivity extends Activity {
         }
         return super.onKeyDown(keyCode, event);
     }
-
-/*    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case EXTERNAL_STORAGE_REQUEST: {
-                if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-                    showWebView();
-                } else {
-                    finish();
-                }
-                return;
-            }
-        }
-    }*/
 
     public class JavaScriptInterface {
 
