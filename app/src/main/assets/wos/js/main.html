@@ -37,6 +37,7 @@
           </div>
         </div>
       </div>
+
       <div class="footer_session">
         <p data-lang="event_list_bottom_msg">Select an event above to view its information</p>
       </div>
@@ -53,7 +54,7 @@
     >
       <!--header-->
       <div class="header flex_container flex_v_center">
-        <div onclick="gotoEventListPage(false);">
+        <div onclick="gotoEventListPage(false);" data-button="BackToEventListButton">
           <img src="image/icon_eventlist.fw.png" alt="Event List" class="icon_eventlist marginright5px" style="pointer-events: none;" />
         </div>
         <div class="flex_left home_name">
@@ -126,9 +127,14 @@
     <div id="ContentTab" class="spa_page padding_bottom70px" style="z-index: 13; display: none;" data-page="ContentTab" data-nav="">
       <!--header-->
       <div class="header flex_container flex_v_center flex_justify">
-        <div class="btn_back"></div>
-        <div class="header_title">The Open</div>
-        <div class="btn_space"></div>
+        <div onclick="gotoEventListPage(false);" data-button="BackToEventListButton">
+          <img src="image/icon_eventlist.fw.png" alt="Event List" class="icon_eventlist marginright5px" style="pointer-events: none;" />
+        </div>
+        <div class="flex_left home_name">
+          <span data-lang="welcome">Welcome, </span>
+          <span data-text="GuestName">Ms Bush</span>
+        </div>
+        <div class="btn_tag" data-button="GuestPack"><span data-lang="guest_pack" onclick="showGuestPackPage();">Guest Pack</span></div>
       </div>
       <!--/*header-->
       <!--content-->

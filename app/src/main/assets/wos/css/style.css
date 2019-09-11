@@ -12,6 +12,7 @@ a {
 :focus {
   -webkit-tap-highlight-color: transparent;
 }
+.progress-bar{background-color:#777!important;}
 .bg_image {
   background-image: url("../image/login_bg.jpg");
   background-attachment: fixed;
@@ -309,6 +310,18 @@ a {
   font-size: 90%;
   width: 100%;
   padding: 10px 5px;
+}
+::placeholder {
+  color: #444;
+  opacity: 1; /* Firefox */
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10-11 */
+  color: #444;
+}
+
+::-ms-input-placeholder { /* Microsoft Edge */
+  color: #444;
 }
 /*flex*/
 .flex_container {

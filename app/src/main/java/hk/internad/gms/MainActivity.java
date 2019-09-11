@@ -15,6 +15,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.webkit.JavascriptInterface;
 import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -32,6 +33,7 @@ import java.net.URL;
 import java.net.URLConnection;
 import static hk.internad.gms.Common.copyFilesAssets;
 import static hk.internad.gms.Common.readFile;
+import static hk.internad.gms.Common.readInStream;
 import static hk.internad.gms.Common.unpackZip;
 import static hk.internad.gms.Common.writeFile;
 
@@ -41,7 +43,6 @@ public class MainActivity extends Activity {
     private String dataPath;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
-
         super.onCreate(savedInstanceState);
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
@@ -53,7 +54,12 @@ public class MainActivity extends Activity {
         setWebView();
         writeDeviceJS();
         writeNotificationJS();
-        webview.loadUrl("file:///"+ dataPath + "/wos/login.html");
+        String NotificationURL =  readFile(dataPath + "/wos/Notification.txt");
+        if ( NotificationURL != ""){
+            webview.loadUrl("file:///"+ dataPath + "/wos/" + NotificationURL);
+        }else{
+            webview.loadUrl("file:///"+ dataPath + "/wos/login.html");
+        }
     }
 
     private void copyHtml(){
@@ -102,6 +108,10 @@ public class MainActivity extends Activity {
             switch (keyCode) {
                 case KeyEvent.KEYCODE_BACK:
                     if (webview.canGoBack()) {
+                        String webUrl = webview.getOriginalUrl();
+                        if (webUrl.contains("main.html#EventList")){
+                            return  false;
+                        }
                         webview.goBack();
                     } else {
                         super.onKeyDown(keyCode,event);

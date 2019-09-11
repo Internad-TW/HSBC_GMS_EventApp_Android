@@ -1,5 +1,9 @@
 //#region Dom Events
 document.addEventListener('DOMContentLoaded', function () {
+    var urlParams = new URLSearchParams(location.search);
+    if (urlParams.get('EventId') !== null && urlParams.get('NewsId') !== null) {
+        localStorage.setItem('NewsDataFromPN', JSON.stringify({ "eventId": urlParams.get('EventId'), "newsId": urlParams.get('NewsId') }));
+    }
     if (__activeInfo.token !== '' && moment().isSameOrBefore(moment(__activeInfo.expiry_date, 'YYYYMMDD'), 'day')) {
         Common.showLoadingScreen();
         axios
@@ -17,13 +21,11 @@ document.addEventListener('DOMContentLoaded', function () {
                         location.href = 'download_db.html';
                     }
                     else {
-                        var func = function () { location.href = 'login.html'; }
-                        Common.alertMessage(lang[Common.getUILang()]["error_msg"]["activation_code_expired"], '', func);
+                        Common.alertMessage(lang[Common.getUILang()]["error_msg"]["activation_code_expired"], '', showInputForm);
                     }
                 }
                 else {
-                    var func = function () { location.href = 'login.html'; }
-                    Common.alertMessage(lang[Common.getUILang()]["error_code"][data.Status.ReturnCode], "Error Code: " + data.Status.ReturnCode, func);
+                    Common.alertMessage(lang[Common.getUILang()]["error_code"][data.Status.ReturnCode], "Error Code: " + data.Status.ReturnCode, showInputForm);
                 }
             })
             .catch(function (error) {
@@ -39,23 +41,25 @@ document.addEventListener('DOMContentLoaded', function () {
             });
     }
     else {
-        window.addEventListener('load', function () {
-            var login_bg = document.getElementById('login_bg');
-            login_bg.style.opacity = '0';
-            var hsbc_logo = document.getElementById('hsbc_logo');
-            hsbc_logo.style.opacity = '1';
-            var hsbc_title = document.getElementById('hsbc_title');
-            hsbc_title.style.opacity = '1';
-            var hsbc_input = document.getElementById('hsbc_input');
-            hsbc_input.style.opacity = '1';
-            hsbc_input.style.marginTop = '40px';
-            var main_content = document.getElementById('btn_submit');
-            btn_submit.style.opacity = '1';
-        });
+        window.addEventListener('load', showInputForm);
     }
     Common.setUILanguage('login');
     document.getElementById("tbPasscode").placeholder = lang[Common.getUILang()].login.passcode_placeholder;
 });
+
+var showInputForm = function () {
+    var login_bg = document.getElementById('login_bg');
+    login_bg.style.opacity = '0';
+    var hsbc_logo = document.getElementById('hsbc_logo');
+    hsbc_logo.style.opacity = '1';
+    var hsbc_title = document.getElementById('hsbc_title');
+    hsbc_title.style.opacity = '1';
+    var hsbc_input = document.getElementById('hsbc_input');
+    hsbc_input.style.opacity = '1';
+    hsbc_input.style.marginTop = '40px';
+    var main_content = document.getElementById('btn_submit');
+    btn_submit.style.opacity = '1';
+};
 //#endregion
 
 //#region Common Functions

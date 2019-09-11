@@ -12,6 +12,8 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
+import static hk.internad.gms.Common.writeFile;
+
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = "MyFirebaseMsgService";
@@ -27,6 +29,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.i("Service", "onMessageReceived: " + remoteMessage.getFrom());
         if (remoteMessage.getData().size() > 0) {
             Log.i("Service", "" + remoteMessage.getData());
+            String eventId  =  remoteMessage.getData().get("eventId ");
+            String newsId  = remoteMessage.getData().get("newsId ");
+            String dataPath = getFilesDir().getAbsolutePath();
+            writeFile(dataPath + "/wos/Notification.txt", "login.html?EventId=" + eventId + "&NewsId=" +newsId );
         }
         if (remoteMessage.getNotification() != null) {
             Log.i("Service", "" + remoteMessage.getNotification().getBody());

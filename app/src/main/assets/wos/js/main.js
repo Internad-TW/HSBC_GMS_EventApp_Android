@@ -2,15 +2,14 @@ const check_notification_setting_time_interval = 30 * 1000;
 
 //#region [ Window and Document Events ]
 document.addEventListener('DOMContentLoaded', function () {
-    if (localStorage.getItem('ActiveInfo') !== null && __activeInfo.token === '') {
+    if (localStorage.getItem('ActiveInfo') !== null) {
         __activeInfo = JSON.parse(localStorage.getItem('ActiveInfo').replace('var __activeInfo = ', '').replace('};', '}').replace(/\\/g, ''));
     }
     [...document.querySelectorAll('[data-text=GuestName]')].forEach(function (elem) {
         elem.innerText = localStorage.getItem('GuestName');;
     });
     Common.writeFooterNAV();
-    gotoEventListPage();
-    history.replaceState('EventList', null, 'main.html#EventList');
+    checkEvents();
 });
 
 window.addEventListener('popstate', function (event) {
@@ -44,6 +43,48 @@ window.addEventListener('popstate', function (event) {
 //#endregion
 
 //#region [ Main Tabs Function ]
+var checkEvents = function () {
+    Common.showLoadingScreen();
+    axios
+        .post(Common.urlInfo.get_all_event_data, {
+            Token: __activeInfo.token,
+        })
+        .then(function (res) {
+            var data = res.data;
+            if (data !== '' && data !== 'var db = {"Events": []};') {
+                eval(data.replace('var ', ''));
+                Common.useOnlineData = true;
+                downloadZip();
+            }
+        })
+        .catch(function (error) {
+            if (error.message === "Network Error") {
+                Common.useOnlineData = false;
+            }
+            else {
+                console.error(error);
+            }
+        })
+        .finally(function () {
+            Common.hideLoadingScreen();
+            if (localStorage.getItem('NewsDataFromPN') !== null) {
+                var news = JSON.parse(localStorage.getItem('NewsDataFromPN'));
+                localStorage.removeItem('NewsDataFromPN');
+                showNewsDetailFromPushNotification(news.eventId, news.newsId);
+            }
+            else {
+                var events = getValidEvents();
+                if (events.length === 1) {
+                    localStorage.setItem('EventId', events[0].Id);
+                    gotoHomeTabPageContent();
+                }
+                else {
+                    gotoEventListPageContent(true);
+                }
+            }
+        });
+};
+
 var gotoEventListPage = function (isFirst) {
     Common.showLoadingScreen();
     axios
@@ -136,6 +177,11 @@ var gotoHomeTabPage = function (elem, reloadData) {
             }
         })
         .finally(function () {
+            //set button
+            var events = getValidEvents();
+            [...document.querySelectorAll('[data-button=BackToEventListButton]')].forEach(function (elem) {
+                elem.style.display = (events.length === 1 ? 'none' : '');
+            });
             Common.hideLoadingScreen();
             gotoHomeTabPageContent(elem, reloadData);
         });
@@ -311,8 +357,6 @@ var gotoContentTabPageContent = function (nav, needPushState, reloadData) {
     var eventData = db.Events.filter(function (obj) { return obj.Id.toString() === eventId; })[0];
     var langIndex = Common.getLangIndex(eventData);
     var contentData = eventData[nav + 'Tab'];
-    //set header
-    ct.querySelector('.header_title').innerHTML = eventData['ShortTitle' + langIndex];
     if (Common.useOnlineData) {
         ct.querySelector('#ContentTab_BannerImage').src = Common.getServerImagePath(eventData.Code) + contentData['BannerImage' + langIndex];
     }
@@ -486,14 +530,6 @@ var showSettingPage = function (action, withAnimation) {
     else {
         lockScreen(true);
         nowPage.style.display = '';
-        if (nowPage.dataset.page !== 'EventList') {
-            if (nowPage.dataset.page === 'HomeTab') {
-                gotoHomeTabPage(undefined, true);
-            }
-            if (nowPage.dataset.page === 'ContentTab') {
-                gotoContentTabPage(nowPage.dataset.nav, false, true);
-            }
-        }
         if (withAnimation) {
             settingPage.classList.add('animated', 'slideOutDown', 'faster');
             settingPage.addEventListener('animationend', function (e) {
@@ -842,69 +878,77 @@ var showGuestPackPageContent = function (action, guestPackData) {
             tmpPanel.querySelector('[data-display-field=HospitalityDate]').children[1].innerHTML = tmpHtml;
             //Gift Redemption
             tmpPanel = gpCardList.children[count].querySelector('[data-display-field=GiftRedemption]');
-            if (obj.Gift === null) {
-                tmpPanel.previousElementSibling.style.display = 'none';
-                tmpPanel.style.display = 'none';
-            }
-            else {
-                tmpPanel.previousElementSibling.style.display = '';
-                tmpPanel.style.display = '';
-                tmpPanel.querySelector('[data-display-field=GiftRedemptionType]').children[1].innerText = obj.Gift.Name;
-                tmpPanel.querySelector('[data-display-field=GiftRedemptionDate]').children[1].innerText = obj.Gift.RedeemedDate;
-                var imageGiftRedeemedStatus = (Number(obj.Gift.Status) === 1 ? 'icon_correct.fw.png' : 'icon_wrong.fw.png');
-                tmpPanel.querySelector('[data-display-field=GiftRedemptionStatus]').children[1].src = 'image/' + imageGiftRedeemedStatus;
-                var giftRedeemedStatus = (Number(obj.Gift.Status) === 1 ? lang[Common.getUILang()].guest_packget.redeemed : lang[Common.getUILang()].guest_packget.no_redeemed);
-                tmpPanel.querySelector('[data-display-field=GiftRedemptionStatus]').children[2].innerText = giftRedeemedStatus;
+            if (tmpPanel.style.display !== 'none') {
+                if (obj.Gift === null) {
+                    tmpPanel.previousElementSibling.style.display = 'none';
+                    tmpPanel.style.display = 'none';
+                }
+                else {
+                    tmpPanel.previousElementSibling.style.display = '';
+                    tmpPanel.style.display = '';
+                    tmpPanel.querySelector('[data-display-field=GiftRedemptionType]').children[1].innerText = obj.Gift.Name;
+                    tmpPanel.querySelector('[data-display-field=GiftRedemptionDate]').children[1].innerText = obj.Gift.RedeemedDate;
+                    var imageGiftRedeemedStatus = (Number(obj.Gift.Status) === 1 ? 'icon_correct.fw.png' : 'icon_wrong.fw.png');
+                    tmpPanel.querySelector('[data-display-field=GiftRedemptionStatus]').children[1].src = 'image/' + imageGiftRedeemedStatus;
+                    var giftRedeemedStatus = (Number(obj.Gift.Status) === 1 ? lang[Common.getUILang()].guest_packget.redeemed : lang[Common.getUILang()].guest_packget.no_redeemed);
+                    tmpPanel.querySelector('[data-display-field=GiftRedemptionStatus]').children[2].innerText = giftRedeemedStatus;
+                }
             }
             //Accomodation
             tmpPanel = gpCardList.children[count].querySelector('[data-display-field=Accomodation]');
-            if (obj.Accommodation.Checkin === '' && obj.Accommodation.Checkout === '') {
-                tmpPanel.previousElementSibling.style.display = 'none';
-                tmpPanel.style.display = 'none';
-            }
-            else {
-                tmpPanel.previousElementSibling.style.display = '';
-                tmpPanel.style.display = '';
-                tmpPanel.children[1].children[0].children[1].innerText = obj.Accommodation.Checkin;
-                tmpPanel.children[1].children[1].children[1].innerText = obj.Accommodation.Checkout;
+            if (tmpPanel.style.display !== 'none') {
+                if (obj.Accommodation === null || (obj.Accommodation.Checkin === '' && obj.Accommodation.Checkout === '')) {
+                    tmpPanel.previousElementSibling.style.display = 'none';
+                    tmpPanel.style.display = 'none';
+                }
+                else {
+                    tmpPanel.previousElementSibling.style.display = '';
+                    tmpPanel.style.display = '';
+                    tmpPanel.children[1].children[0].children[1].innerText = obj.Accommodation.Checkin;
+                    tmpPanel.children[1].children[1].children[1].innerText = obj.Accommodation.Checkout;
+                }
             }
             //Entertainment
             tmpPanel = gpCardList.children[count].querySelector('[data-display-field=Entertainment]');
-            if (obj.EntertainmentList === null || obj.EntertainmentList.length === 0) {
-                tmpPanel.previousElementSibling.style.display = 'none';
-                tmpPanel.style.display = 'none';
-            }
-            else {
-                tmpPanel.previousElementSibling.style.display = '';
-                tmpPanel.style.display = '';
-                tmpHtml = '';
-                obj.EntertainmentList.forEach(function (ente) {
-                    tmpHtml += '<div class="bg_div"><p class="fontsize90per marginbottom0px margintop0px">' + ente.Name + '</p></div>'
-                });
-                tmpPanel.children[1].innerHTML = tmpHtml;
+            if (tmpPanel.style.display !== 'none') {
+                if (obj.EntertainmentList === null || obj.EntertainmentList.length === 0) {
+                    tmpPanel.previousElementSibling.style.display = 'none';
+                    tmpPanel.style.display = 'none';
+                }
+                else {
+                    tmpPanel.previousElementSibling.style.display = '';
+                    tmpPanel.style.display = '';
+                    tmpHtml = '';
+                    obj.EntertainmentList.forEach(function (ente) {
+                        tmpHtml += '<div class="bg_div"><p class="fontsize90per marginbottom0px margintop0px">' + ente.Name + '</p></div>'
+                    });
+                    tmpPanel.children[1].innerHTML = tmpHtml;
+                }
             }
             //Host
             tmpPanel = gpCardList.children[count].querySelector('[data-display-field=Host]');
-            if (obj.Host.Name === '' && obj.Host.Photo === '') {
-                tmpPanel.previousElementSibling.style.display = 'none';
-                tmpPanel.style.display = 'none';
-            }
-            else {
-                tmpPanel.previousElementSibling.style.display = '';
-                tmpPanel.style.display = '';
-                if (obj.Host.Name === '') {
-                    tmpPanel.children[1].children[0].style.display = 'none';
+            if (tmpPanel.style.display !== 'none') {
+                if (obj.Host.Name === '' && obj.Host.Photo === '') {
+                    tmpPanel.previousElementSibling.style.display = 'none';
+                    tmpPanel.style.display = 'none';
                 }
                 else {
-                    tmpPanel.children[1].children[0].style.display = '';
-                    tmpPanel.children[1].children[0].innerText = obj.Host.Name;
-                }
-                if (obj.Host.Photo === '') {
-                    tmpPanel.children[1].children[1].style.display = 'none';
-                }
-                else {
-                    tmpPanel.children[1].children[1].style.display = '';
-                    tmpPanel.children[1].children[1].children[0].src = obj.Host.Photo;
+                    tmpPanel.previousElementSibling.style.display = '';
+                    tmpPanel.style.display = '';
+                    if (obj.Host.Name === '') {
+                        tmpPanel.children[1].children[0].style.display = 'none';
+                    }
+                    else {
+                        tmpPanel.children[1].children[0].style.display = '';
+                        tmpPanel.children[1].children[0].innerText = obj.Host.Name;
+                    }
+                    if (obj.Host.Photo === '') {
+                        tmpPanel.children[1].children[1].style.display = 'none';
+                    }
+                    else {
+                        tmpPanel.children[1].children[1].style.display = '';
+                        tmpPanel.children[1].children[1].children[0].src = obj.Host.Photo;
+                    }
                 }
             }
             //
@@ -1227,4 +1271,42 @@ var doAfterDownloadZip = function (msg) {
         localStorage.setItem("DownloadDbMd5", document.getElementById("tbMD5").value);
     }
     Common.downloadZipLocked = false;
+};
+
+var showNewsDetailFromPushNotification = function (eventId, newsId) {
+    document.getElementById('G_EventId').value = eventId;
+    gotoHomeTabPageContent();
+    var nowPage = document.getElementById(document.getElementById('G_NowPage').value);
+    var newsPage = document.getElementById('NewsDetail');
+    //set content
+    newsPage.dataset.newsId = newsId;
+    if (newsPage.dataset.newsId !== '') {
+        var eventData = db.Events.filter(function (obj) { return obj.Id.toString() === document.getElementById('G_EventId').value; })[0];
+        var langIndex = Common.getLangIndex(eventData);
+        var news = eventData.HomeTab.NewsList.filter(function (obj) { return obj.Id.toString() === newsPage.dataset.newsId; })[0];
+        newsPage.querySelector('.header_title').innerHTML = eventData['ShortTitle' + langIndex];
+        newsPage.querySelector('#NewsDetail_Headline').innerHTML = news['Headline' + langIndex];
+        if (news.MainImage === '') {
+            newsPage.querySelector('#NewsDetail_MainImage').style.display = 'none';
+        }
+        else {
+            if (Common.useOnlineData) {
+                newsPage.querySelector('#NewsDetail_MainImage').src = Common.getServerImagePath(eventData.Code) + news.MainImage;
+            }
+            else {
+                newsPage.querySelector('#NewsDetail_MainImage').src = 'data/' + eventData.Code + '/EventApp/' + eventData.ImageUsedFolder + '/' + news.MainImage;
+            }
+            newsPage.querySelector('#NewsDetail_MainImage').style.display = '';
+        }
+        newsPage.querySelector('#NewsDetail_PublishDate').innerHTML = Common.getDateString('NewsDate', eventData.Id, news.PublishDate);
+        newsPage.querySelector('#NewsDetail_ArticleBody').innerHTML = news['ArticleBody' + langIndex];
+    }
+    newsPage.querySelector('header_title')
+    //animation
+    lockScreen(true);
+    newsPage.style.display = '';
+    nowPage.style.display = 'none';
+    lockScreen(false);
+    document.getElementById('G_FloatingPage').value = 'NewsDetail';
+    history.pushState('NewsDetail', null, 'main.html#NewsDetail');
 };

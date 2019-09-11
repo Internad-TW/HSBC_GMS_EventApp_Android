@@ -34,7 +34,7 @@
         <span data-lang="loading_data">Loading data from server</span>
         <!--<img src="image/loading-bar-gif-png-9.gif" alt="" style="pointer-events: none; margin-top: 10px;" />-->
         <div class="progress" style="margin-top: 10px;">
-          <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%;"></div>
+          <div class="progress-bar progress-bar-striped bg-warning active" role="progressbar" style="width: 0%;"></div>
         </div>
       </div>
     </div>
@@ -95,6 +95,7 @@
                 } else {
                   console.log("Download Zip Url: " + data.ZipPath);
                   location.href = "main.html#EventList";
+                  //showDownloadProgress(60, 100)
                 }
               }
             } else {
