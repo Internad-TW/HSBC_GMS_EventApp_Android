@@ -34,7 +34,7 @@
         <span data-lang="loading_data">Loading data from server</span>
         <!--<img src="image/loading-bar-gif-png-9.gif" alt="" style="pointer-events: none; margin-top: 10px;" />-->
         <div class="progress" style="margin-top: 10px;">
-          <div class="progress-bar progress-bar-striped active" role="progressbar" style="width: 0%;"></div>
+          <div class="progress-bar progress-bar-striped bg-warning active" role="progressbar" style="width: 0%;"></div>
         </div>
       </div>
     </div>
@@ -55,6 +55,7 @@
     <script src="data/db.js"></script>
     <script>
       document.addEventListener("DOMContentLoaded", function() {
+        localStorage.removeItem("ForApproval");
         Common.setUILanguage("login");
         if (__activeInfo.token === "" && localStorage.getItem("ActiveInfo") !== null) {
           __activeInfo = JSON.parse(
@@ -84,17 +85,19 @@
               if (MD5 === data.MD5) {
                 showDownloadProgress(100, 100);
                 setTimeout(function() {
-                  location.href = "main.html#EventList";
+                  location.href = "main.html?HP#EventList";
                 }, 1000);
               } else {
                 document.getElementById("tbMD5").value = data.MD5;
+                localStorage.setItem("DownloadDbMd5", document.getElementById("tbMD5").value);
                 if (__deviceInfo.OS.toLowerCase() === "android") {
                   android.downloadZip(data.ZipPath);
                 } else if (__deviceInfo.OS.toLowerCase() === "ios") {
                   webkit.messageHandlers.downloadZip.postMessage(data.ZipPath);
                 } else {
-                  console.log("Download Zip Url: " + data.ZipPath);
-                  location.href = "main.html#EventList";
+                  //console.log("Download Zip Url: " + data.ZipPath);
+                  location.href = "main.html?HP#EventList";
+                  //showDownloadProgress(60, 100)
                 }
               }
             } else {
@@ -106,7 +109,7 @@
           })
           .catch(function(error) {
             if (error.message === "Network Error") {
-              location.href = "main.html#EventList";
+              location.href = "main.html?HP#EventList";
             } else {
               console.error(error);
             }
@@ -116,7 +119,7 @@
       function doAfterDownloadZip(msg) {
         if (msg === "success") {
           localStorage.setItem("DownloadDbMd5", document.getElementById("tbMD5").value);
-          location.href = "main.html#EventList";
+          location.href = "main.html?HP#EventList";
         } else {
           Common.alertMessage(msg, "Error");
           var div = document.getElementById("DownloadingScreen");

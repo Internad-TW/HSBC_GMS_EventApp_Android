@@ -37,6 +37,7 @@
           </div>
         </div>
       </div>
+
       <div class="footer_session">
         <p data-lang="event_list_bottom_msg">Select an event above to view its information</p>
       </div>
@@ -53,14 +54,14 @@
     >
       <!--header-->
       <div class="header flex_container flex_v_center">
-        <div onclick="gotoEventListPage(false);">
+        <div onclick="gotoEventListPage(false);" data-button="BackToEventListButton">
           <img src="image/icon_eventlist.fw.png" alt="Event List" class="icon_eventlist marginright5px" style="pointer-events: none;" />
         </div>
         <div class="flex_left home_name">
           <span data-lang="welcome">Welcome, </span>
           <span data-text="GuestName">Ms Bush</span>
         </div>
-        <div class="btn_tag" data-button="GuestPack"><span data-lang="guest_pack" onclick="showGuestPackPage();">Guest Pack</span></div>
+        <div class="btn_tag" data-button="GuestPack" onclick="showContactPage();"><span data-lang="guest_pack">Contact</span></div>
         <div onclick="showSettingPage();">
           <img src="image/icon_setting.fw.png" alt="Setting" class="icon_setting" style="pointer-events: none;" />
         </div>
@@ -79,17 +80,17 @@
                 <div class="width100per flex_container flex_v_center flex_center">
                   <div id="HomeTab_CC_Day" class="flex_v_center text_center">
                     <div class="home_timer_counter">113</div>
-                    <div class="home_timer_title">DAYS</div>
+                    <div class="home_timer_title" data-lang="days">DAYS</div>
                   </div>
                   <div class="home_timer_counter home_timer_counter_sign">:</div>
                   <div id="HomeTab_CC_Hour" class="flex_v_center text_center">
                     <div class="home_timer_counter">21</div>
-                    <div class="home_timer_title">HOURS</div>
+                    <div class="home_timer_title" data-lang="hours">HOURS</div>
                   </div>
                   <div class="home_timer_counter home_timer_counter_sign">:</div>
                   <div id="HomeTab_CC_Minute" class="flex_v_center text_center">
                     <div class="home_timer_counter">55</div>
-                    <div class="home_timer_title">MINUTES</div>
+                    <div class="home_timer_title" data-lang="minutes">MINUTES</div>
                   </div>
                 </div>
               </div>
@@ -126,9 +127,14 @@
     <div id="ContentTab" class="spa_page padding_bottom70px" style="z-index: 13; display: none;" data-page="ContentTab" data-nav="">
       <!--header-->
       <div class="header flex_container flex_v_center flex_justify">
-        <div class="btn_back"></div>
-        <div class="header_title">The Open</div>
-        <div class="btn_space"></div>
+        <div onclick="gotoEventListPage(false);" data-button="BackToEventListButton">
+          <img src="image/icon_eventlist.fw.png" alt="Event List" class="icon_eventlist marginright5px" style="pointer-events: none;" />
+        </div>
+        <div class="flex_left home_name">
+          <span data-lang="welcome">Welcome, </span>
+          <span data-text="GuestName">Ms Bush</span>
+        </div>
+        <div class="btn_tag" data-button="GuestPack" onclick="showContactPage();"><span data-lang="guest_pack">Contact</span></div>
       </div>
       <!--/*header-->
       <!--content-->
@@ -145,6 +151,169 @@
     </div>
     <!-- #endregion -->
 
+    <!-- #region Guest Paek -->
+    <div id="GuestPackTab" class="spa_page" style="z-index: 14; display: none; background-color: #fff;" data-page="GuestPack" data-nav="GuestPack">
+      <div id="GuestPack_Header" class="header flex_container flex_v_center flex_justify" style="z-index: 59;">
+        <div onclick="gotoEventListPage(false);" data-button="BackToEventListButton">
+          <img src="image/icon_eventlist.fw.png" alt="Event List" class="icon_eventlist marginright5px" style="pointer-events: none;" />
+        </div>
+        <div class="flex_left home_name">
+          <span data-lang="welcome">Welcome, </span>
+          <span data-text="GuestName">Ms Bush</span>
+        </div>
+        <div class="btn_tag" data-button="GuestPack" onclick="showContactPage();"><span data-lang="guest_pack">Guest Pack</span></div>
+      </div>
+      <div id="GuestPack_Content" class="content bg_gray">
+        <div class="paddinglr15">
+          <!--flex container begin-->
+          <div id="GuestPack_CardList" class="flex_container flex_center paddingtop15">
+            <div
+              style="position: absolute; left: 5vw; top: 80px; z-index: 51; transition-duration: 0.2s; transform: translate(0px, 0px);"
+              class="card card--answer"
+            >
+              <div class="flex_container text_center" onclick="swapActiveCard(this);" data-display-field="GuestName">
+                <img src="image/icon_guest.fw.png" class="icon_guest" />
+                <h1 class="margintop0px"><span>Guest</span><span class="guest_title_gray"></span></h1>
+              </div>
+              <p class="fontsize90per margintop0px lineheight135per">Show this QR code at the HSBC ticket collection booth to collect your hospitality pack.</p>
+              <div class="width100per text_center marginbottom20px" data-display-field="QRCode">
+                <canvas class="qr_pic" data-qr-code="123456789123456789123456789"></canvas>
+              </div>
+              <div class="panel_container">
+                <!--panel 1-->
+                <div class="panel_border">
+                  <button type="button" class="accordion" onclick="showAccordion(this);">Ticket Redemption</button>
+                  <div class="panel" data-display-field="TicketRedemption" style="display: none;">
+                    <p class="fontsize80per paddinglr10 margintop0px">
+                      Show this QR code at the ticket redemption counter at Hexgon Suite to collect your ticket(s).
+                    </p>
+                    <div>
+                      <div class="bg_div" data-display-field="TicketTypes">
+                        <div class="guest_title marginbottom5px" data-lang="ticket_types">Ticket Types :</div>
+                        <p class="fontsize90per marginbottom0px margintop0px">
+                          Hexagon Suite Ticket (Thursday, 31 October)<br />
+                          Hexagon Suite Ticket (Friday, 1 November)<br />
+                          Hexagon Suite Ticket (Saturday, 2 November)<br />
+                          Hexagon Suite Ticket (Sunday, 3 November)
+                        </p>
+                      </div>
+                      <div class="bg_div flex_container flex_v_center" data-display-field="TicketRedemptionStatus">
+                        <div class="width50per guest_title" data-lang="status">Status</div>
+                        <img src="image/icon_correct.fw.png" class="icon_tick" />
+                        <div class="guest_detail">Redeemed</div>
+                      </div>
+                      <div class="bg_div flex_container" data-display-field="TicketRedemptionDate">
+                        <div class="width50per guest_title" data-lang="redemption_date">Redemption Date</div>
+                        <div class="width50per guest_detail">31 Oct 2019</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--/panel 1-->
+                <!--panel 2-->
+                <div class="panel_border">
+                  <button type="button" class="accordion" onclick="showAccordion(this);">Hospitality</button>
+                  <div class="panel" data-display-field="Hospitality" style="display: none;">
+                    <p class="fontsize80per paddinglr10 margintop0px">You are entitled to the below HSBC hospitality</p>
+                    <div>
+                      <div class="bg_div flex_container" data-display-field="HospitalityType">
+                        <div class="width50per guest_title" data-lang="hospitality_type">Hospitality Type :</div>
+                        <div class="width50per guest_detail">Hexagon Suite</div>
+                      </div>
+                      <div class="bg_div" data-display-field="HospitalityDate">
+                        <div class="guest_title marginbottom5px" data-lang="hospitality_ate">Hospitality Date :</div>
+                        <p class="fontsize90per marginbottom0px margintop0px">
+                          31 Oct 2019<br />
+                          1 Nov 2019<br />
+                          2 Nov 2019<br />
+                          3 Nov 2019
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--/panel 2-->
+                <!--panel 3-->
+                <div class="panel_border">
+                  <button type="button" class="accordion" onclick="showAccordion(this);">Gift Redemption</button>
+                  <div class="panel" data-display-field="GiftRedemption" style="display: none;">
+                    <p class="fontsize80per paddinglr10 margintop0px">You are entitled to a shirt as a gift</p>
+                    <div>
+                      <div class="bg_div flex_container" data-display-field="GiftRedemptionType">
+                        <div class="width50per guest_title" data-lang="gift_redemption_type">Gift Types :</div>
+                        <div class="width50per guest_detail">VIP Gift</div>
+                      </div>
+                      <div class="bg_div flex_container" data-display-field="GiftRedemptionStatus">
+                        <div class="width50per guest_title" data-lang="status">Status</div>
+                        <img src="image/icon_correct.fw.png" class="icon_tick" />
+                        <div class="guest_detail" data-lang="redeemed">Redeemed</div>
+                      </div>
+                      <div class="bg_div flex_container" data-display-field="GiftRedemptionDate">
+                        <div class="width50per guest_title" data-lang="redemption_date">Redemption Date</div>
+                        <div class="width50per guest_detail">31 Oct 2019</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--/panel 3-->
+                <!--panel 4-->
+                <div class="panel_border">
+                  <button type="button" class="accordion" onclick="showAccordion(this);">Accommodation</button>
+                  <div class="panel" data-display-field="Accomodation" style="display: none;">
+                    <p class="fontsize80per paddinglr10 margintop0px">The below accommodation has been booked for you.</p>
+                    <div>
+                      <div class="bg_div flex_container">
+                        <div class="width50per guest_title" data-lang="accomodation_check_in">Check-in :</div>
+                        <div class="guest_detail">31 Oct 2019</div>
+                      </div>
+                      <div class="bg_div flex_container">
+                        <div class="width50per guest_title" data-lang="accomodation_check_out">Check-out :</div>
+                        <div class="width50per guest_detail">4 Nov 2019</div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--/panel 4-->
+                <!--panel 5-->
+                <div class="panel_border">
+                  <button type="button" class="accordion" onclick="showAccordion(this);">Dinner</button>
+                  <div class="panel" data-display-field="Entertainment" style="display: none;">
+                    <p class="fontsize80per paddinglr10 margintop0px">
+                      You are invited to the below social event. You relationship manager will contact you on transfer arrangement.
+                    </p>
+                    <div>
+                      <div class="bg_div">
+                        <p class="fontsize90per marginbottom0px margintop0px">
+                          29 Oct 2019 - Welcome Reception
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+                <!--/panel 5-->
+                <!--panel 6-->
+                <div class="panel_border">
+                  <button type="button" class="accordion" onclick="showAccordion(this);">Your Host</button>
+                  <div class="panel" data-display-field="Host" style="display: none;">
+                    <p class="fontsize80per paddinglr10 margintop0px">Below is your host for the event.</p>
+                    <div class="bg_div_white flex_container">
+                      <div class="width50per guest_title">Chris Evans</div>
+                      <div class="width50per guest_detail"><img src="image/host_pic_sample.jpg" class="width80per" /></div>
+                    </div>
+                  </div>
+                </div>
+                <!--/panel 6-->
+              </div>
+              <div data-position></div>
+            </div>
+          </div>
+          <!--flex container end-->
+        </div>
+      </div>
+      <div class="footer_nav"></div>
+    </div>
+    <!-- #endregion -->
+    
     <!-- #region Setting -->
     <div id="Setting" class="spa_page bg_gray" style="z-index: 30; display: none;" data-page="Setting">
       <!--header-->
@@ -152,7 +321,7 @@
         <div class="btn_back" onclick="showSettingPage(false);">
           <img src="image/icon_backarrow.fw.png" alt="back" class="icon_back" style="position: none;" />
         </div>
-        <div class="header_title">Settings</div>
+        <div class="header_title" data-lang="title">Settings</div>
         <div class="btn_space"></div>
       </div>
       <!--/*header-->
@@ -165,7 +334,7 @@
             <div class="gray_bottomline"></div>
           </div>
           <div class="bg_div_lightgrey width100per flex_container flex_justify flex_v_center">
-            <div class="setting_title">Language</div>
+            <div class="setting_title" data-lang="language">Language</div>
             <div class="switch-field">
               <input
                 type="radio"
@@ -180,7 +349,7 @@
             </div>
           </div>
           <div class="bg_div_lightgrey width100per flex_container flex_justify flex_v_center">
-            <div class="setting_title">Notifications</div>
+            <div class="setting_title" data-lang="notifications">Notifications</div>
             <label class="md_switch">
               <input type="checkbox" data-event-id="" data-field="notification" onclick="setEventNotification(this);" />
               <span class="md_switch__toggle"></span>
@@ -213,160 +382,30 @@
     </div>
     <!-- #endregion -->
 
-    <!-- #region Guest Paek -->
-    <div id="GuestPack" class="spa_page" style="z-index: 50; display: none; background-color: #fff;" data-page="GuestPack">
-      <div id="GuestPack_Header" class="header flex_container flex_v_center flex_justify" style="z-index: 59;">
-        <div class="btn_back" onclick="showGuestPackPageContent(false);">
-          <img src="image/icon_backarrow.fw.png" alt="back" class="icon_back" style="pointer-events: none;" />
+    <!-- #region Contact -->
+    <div id="Contact" class="spa_page" style="z-index: 50; background-color: rgb(255, 255, 255); display: none;" data-page="Contact" data-nav="">
+      <!--header-->
+      <div class="header flex_container flex_v_center flex_justify">
+        <div class="btn_back" onclick="showContactPage(false);">
+          <img src="image/icon_backarrow.fw.png" alt="back" class="icon_back" style="position: none;" />
         </div>
-        <div class="header_title">Guest Pack</div>
+        <div class="header_title" data-lang="title">Contact</div>
         <div class="btn_space"></div>
       </div>
-      <div id="GuestPack_Content" class="content bg_gray">
-        <div class="paddinglr15">
-          <!--flex container begin-->
-          <div id="GuestPack_CardList" class="flex_container flex_center paddingtop15">
-            <div
-              style="position: absolute; left: 5vw; top: 80px; z-index: 51; transition-duration: 1s; 
-              transform: translate(0px, 0px);"
-              class="card card--answer"
-            >
-              <div class="flex_container text_center" onclick="swapActiveCard(this);" data-display-field="GuestName">
-                <img src="image/icon_guest.fw.png" class="icon_guest" />
-                <h1 class="margintop0px"><span>Guest</span><span class="guest_title_gray"></span></h1>
-              </div>
-              <p class="fontsize80per margintop0px">Show this QR code at the HSBC ticket collection booth to collect your hospitality pack.</p>
-              <div class="width100per text_center marginbottom20px" data-display-field="QRCode">
-                <canvas class="qr_pic" data-qr-code="123456789123456789123456789"></canvas>
-              </div>
-              <div class="panel_container">
-                <!--panel 1-->
-                <button type="button" class="accordion" onclick="showAccordion(this);">Ticket Redemption</button>
-                <div class="panel" data-display-field="TicketRedemption">
-                  <p class="fontsize80per paddinglr10 margintop0px">
-                    Show this QR code at the ticket redemption counter at Hexgon Suite to collect your ticket(s).
-                  </p>
-                  <div>
-                    <div class="bg_div" data-display-field="TicketTypes">
-                      <div class="guest_title marginbottom5px" data-lang="ticket_types">Ticket Types :</div>
-                      <p class="fontsize90per marginbottom0px margintop0px">
-                        Hexagon Suite Ticket (Thursday, 31 October)<br />
-                        Hexagon Suite Ticket (Friday, 1 November)<br />
-                        Hexagon Suite Ticket (Saturday, 2 November)<br />
-                        Hexagon Suite Ticket (Sunday, 3 November)
-                      </p>
-                    </div>
-                    <div class="bg_div flex_container flex_v_center" data-display-field="TicketRedemptionStatus">
-                      <div class="width50per guest_title" data-lang="status">Status</div>
-                      <img src="image/icon_correct.fw.png" class="icon_tick" />
-                      <div class="guest_detail">Redeemed</div>
-                    </div>
-                    <div class="bg_div flex_container" data-display-field="TicketRedemptionDate">
-                      <div class="width50per guest_title" data-lang="redemption_date">Redemption Date</div>
-                      <div class="width50per guest_detail">31 Oct 2019</div>
-                    </div>
-                  </div>
-                  <div class="panel_end"></div>
-                </div>
-                <!--/panel 1-->
-                <!--panel 2-->
-                <button type="button" class="accordion" onclick="showAccordion(this);">Hospitality</button>
-                <div class="panel" data-display-field="Hospitality">
-                  <p class="fontsize80per paddinglr10 margintop0px">You are entitled to the below HSBC hospitality</p>
-                  <div>
-                    <div class="bg_div flex_container" data-display-field="HospitalityType">
-                      <div class="width50per guest_title" data-lang="hospitality_type">Hospitality Type :</div>
-                      <div class="width50per guest_detail">Hexagon Suite</div>
-                    </div>
-                    <div class="bg_div" data-display-field="HospitalityDate">
-                      <div class="guest_title marginbottom5px" data-lang="hospitality_ate">Hospitality Date :</div>
-                      <p class="fontsize90per marginbottom0px margintop0px">
-                        31 Oct 2019<br />
-                        1 Nov 2019<br />
-                        2 Nov 2019<br />
-                        3 Nov 2019
-                      </p>
-                    </div>
-                  </div>
-                  <div class="panel_end"></div>
-                </div>
-                <!--/panel 2-->
-                <!--panel 3-->
-                <button type="button" class="accordion" onclick="showAccordion(this);">Gift Redemption</button>
-                <div class="panel" data-display-field="GiftRedemption">
-                  <p class="fontsize80per paddinglr10 margintop0px">You are entitled to a shirt as a gift</p>
-                  <div>
-                    <div class="bg_div flex_container" data-display-field="GiftRedemptionType">
-                      <div class="width50per guest_title" data-lang="gift_redemption_type">Gift Types :</div>
-                      <div class="width50per guest_detail">VIP Gift</div>
-                    </div>
-                    <div class="bg_div flex_container" data-display-field="GiftRedemptionStatus">
-                      <div class="width50per guest_title" data-lang="status">Status</div>
-                      <img src="image/icon_correct.fw.png" class="icon_tick" />
-                      <div class="guest_detail" data-lang="redeemed">Redeemed</div>
-                    </div>
-                    <div class="bg_div flex_container" data-display-field="GiftRedemptionDate">
-                      <div class="width50per guest_title" data-lang="redemption_date">Redemption Date</div>
-                      <div class="width50per guest_detail">31 Oct 2019</div>
-                    </div>
-                  </div>
-                  <div class="panel_end"></div>
-                </div>
-                <!--/panel 3-->
-                <!--panel 4-->
-                <button type="button" class="accordion" onclick="showAccordion(this);">Accommodation</button>
-                <div class="panel" data-display-field="Accomodation">
-                  <p class="fontsize80per paddinglr10 margintop0px">The below accommodation has been booked for you.</p>
-                  <div>
-                    <div class="bg_div flex_container">
-                      <div class="width50per guest_title" data-lang="accomodation_check_in">Check-in :</div>
-                      <div class="guest_detail">31 Oct 2019</div>
-                    </div>
-                    <div class="bg_div flex_container">
-                      <div class="width50per guest_title" data-lang="accomodation_check_out">Check-out :</div>
-                      <div class="width50per guest_detail">4 Nov 2019</div>
-                    </div>
-                  </div>
-                  <div class="panel_end"></div>
-                </div>
-                <!--/panel 4-->
-                <!--panel 5-->
-                <button type="button" class="accordion" onclick="showAccordion(this);">Dinner</button>
-                <div class="panel" data-display-field="Entertainment">
-                  <p class="fontsize80per paddinglr10 margintop0px">
-                    You are invited to the below social event. You relationship manager will contact you on transfer arrangement.
-                  </p>
-                  <div>
-                    <div class="bg_div">
-                      <p class="fontsize90per marginbottom0px margintop0px">
-                        29 Oct 2019 - Welcome Reception
-                      </p>
-                    </div>
-                  </div>
-                  <div class="panel_end"></div>
-                </div>
-                <!--/panel 5-->
-                <!--panel 6-->
-                <button type="button" class="accordion" onclick="showAccordion(this);">Your Host</button>
-                <div class="panel" data-display-field="Host">
-                  <p class="fontsize80per paddinglr10 margintop0px">Below is your host for the event.</p>
-                  <div class="bg_div_white flex_container">
-                    <div class="width50per guest_title">Chris Evans</div>
-                    <div class="width50per guest_detail"><img src="image/host_pic_sample.jpg" class="width80per" /></div>
-                  </div>
-                  <div class="panel_end"></div>
-                </div>
-                <!--/panel 6-->
-              </div>
-              <div data-position></div>
-            </div>
-          </div>
-          <!--flex container end-->
+      <!--/*header-->
+      <!--content-->
+      <div class="content">
+        <img id="ContentTab_BannerImage" src="" class="width100per" />
+        <div class="paddinglr30">
+          <!--dynamic content-->
+          <h1 id="ContentTab_Title">Itinerary</h1>
+          <div id="ContentTab_Content"></div>
+          <!--/*dynamic content-->
         </div>
       </div>
     </div>
     <!-- #endregion -->
-
+    
     <!-- #region Template -->
     <template id="FooterNavTemplate">
       <div class="icon_bar">
@@ -376,19 +415,19 @@
         </a>
         <a href="#" onclick="gotoPageFromNav(this.dataset.nav); return false;" data-nav="Info">
           <img src="image/icon_info_normal.fw.png" class="bottom_icon" style="pointer-events: none;" />
-          <span class="icon_normal_text" data-lang="info">Info</span>
+          <span class="icon_normal_text" data-lang="info">Event Info</span>
         </a>
         <a href="#" onclick="gotoPageFromNav(this.dataset.nav); return false;" data-nav="Itinerary">
           <img src="image/icon_itinerary_normal.fw.png" class="bottom_icon" style="pointer-events: none;" />
           <span class="icon_normal_text" data-lang="itinerary">Itinerary</span>
         </a>
         <a href="#" onclick="gotoPageFromNav(this.dataset.nav); return false;" data-nav="Hospitality">
-          <img src="image/icon_hospitality_normal.fw.png" class="bottom_icon" style="pointer-events: none;" />
-          <span class="icon_normal_text" data-lang="hospitality">Hospitality</span>
+          <img src="image/icon_onsite_normal.fw.png" class="bottom_icon" style="pointer-events: none;" />
+          <span class="icon_normal_text" data-lang="hospitality">Onsite</span>
         </a>
-        <a href="#" onclick="gotoPageFromNav(this.dataset.nav); return false;" data-nav="Contact">
-          <img src="image/icon_contact_normal.fw.png" class="bottom_icon" style="pointer-events: none;" />
-          <span class="icon_normal_text" data-lang="contact">Contact</span>
+        <a href="#" onclick="gotoPageFromNav(this.dataset.nav); return false;" data-nav="GuestPack">
+          <img src="image/icon_qrcode_normal.fw.png" class="bottom_icon" style="pointer-events: none;" />
+          <span class="icon_normal_text" data-lang="contact">QR Code</span>
         </a>
       </div>
     </template>
@@ -407,8 +446,15 @@
     </template>
     <!-- #endregion -->
 
+    <!-- #region Empty Page -->
+    <div id="Empty" class="spa_page" style="z-index: 14; display: none; background-color: #fff;" data-page="Empty">
+      <div class="bg_image" id="login_bg"></div>
+    </div>
+    <!-- #endregion -->
+    
     <!-- #region Scripts -->
     <script src="js/libs/moment-with-locales.min.js"></script>
+    <script src="js/libs/moment-timezone-with-data.min.js"></script>
     <script src="js/libs/axios.min.js"></script>
     <script src="js/libs/countdown.min.js"></script>
     <script src="js/libs/promise-7.0.4.min.js"></script>

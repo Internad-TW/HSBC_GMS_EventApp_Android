@@ -4,19 +4,21 @@ var db = {
             "Id": -1,
             "Code": "event1",
             "ImageUsedFolder": "Uploaded",
-            "TimeZone": 480,
+            "TimeZone": 'Asia/Taipei',
             "TicketId": "1916",
             "Language1": "en",
-            "Language2": "zh-tw",
+            "Language2": "zh-cn",
             "LanguageCode": "en",
             "ServerLanguage1": 5,
             "ServerLanguage2": 0,
             "Title1": "The 148<sup>th</sup> Open at Royal Portrush,",
             "Title2": "中文",
             "ShortTitle1": "The 148<sup>th</sup> Open at Royal Portrush",
-            "ShortTitle2": "中文短",
+            "ShortTitle2": "中文",
             "StartDate": moment().add(-1, 'month').format('YYYY-MM-DD'),
             "EndDate": moment().add(1, 'month').format('YYYY-MM-DD'),
+            "EventStartDate": moment().add(-1, 'month').format('YYYY-MM-DD'),
+            "EventEndDate": moment().add(1, 'month').format('YYYY-MM-DD'),
             "ListImage": "banner_theopen.jpg",
             "LogoImage1": "logo_theopen.fw.png",
             "LogoImage2": "logo_theopen.fw.png",
@@ -224,13 +226,20 @@ var db = {
                 "HostDescription2": "",
                 "ShowHostName": 1,
                 "ShowHostPhoto": 1
+            },
+            "PopupNotice": {
+                "Heading1": "123",
+                "Heading2": "一二三",
+                "Message1": "Content",
+                "Message2": "內容",
+                "PublishDate": "2019-10-30"
             }
         },
         {
             "Id": -2,
             "Code": "event2",
             "ImageUsedFolder": "Uploaded",
-            "TimeZone": 480,
+            "TimeZone": 'Asia/Taipei',
             "TicketId": "",
             "Language1": "en",
             "Language2": "",
@@ -243,6 +252,8 @@ var db = {
             "ShortTitle2": "The Championships, Wimbledon",
             "StartDate": moment().add(-1, 'month').format('YYYY-MM-DD'),
             "EndDate": moment().add(1, 'month').format('YYYY-MM-DD'),
+            "EventStartDate": moment().add(-1, 'month').format('YYYY-MM-DD'),
+            "EventEndDate": moment().add(1, 'month').format('YYYY-MM-DD'),
             "ListImage": "banner_wimbledon.jpg",
             "LogoImage1": "logo_big.fw.png",
             "LogoImage2": "",
@@ -450,7 +461,8 @@ var db = {
                 "HostDescription2": "",
                 "ShowHostName": 1,
                 "ShowHostPhoto": 1
-            }
+            },
+            "PopupNotice": null
         }
     ]
 };

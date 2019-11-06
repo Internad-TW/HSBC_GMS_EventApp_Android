@@ -1,50 +1,59 @@
 //#region Dom Events
 document.addEventListener('DOMContentLoaded', function () {
-    var urlParams = new URLSearchParams(location.search);
-    if (urlParams.get('EventId') !== null && urlParams.get('NewsId') !== null) {
-        localStorage.setItem('NewsDataFromPN', JSON.stringify({ "eventId": urlParams.get('EventId'), "newsId": urlParams.get('NewsId') }));
+    Common.setUILanguage('login');
+    document.getElementById("tbPasscode").placeholder = lang[Common.getUILang()].login.passcode_placeholder;
+    //
+    if (localStorage.getItem('TokenExpiry') !== null) {
+        localStorage.removeItem('TokenExpiry');
+        window.addEventListener('load', showInputForm);
     }
-    if (__activeInfo.token !== '' && moment().isSameOrBefore(moment(__activeInfo.expiry_date, 'YYYYMMDD'), 'day')) {
-        Common.showLoadingScreen();
-        axios
-            .post(Common.urlInfo.validate_token, {
-                Token: __activeInfo.token,
-                Date: md5(moment().format("YYYYMMDD")).toUpperCase()
-            })
-            .then(function (res) {
-                var data = res.data;
-                if (data.Status.ReturnCode === "00") {
-                    if (Number(data.IsValid) === 1 || Number(data.IsValid) === 2) {
-                        __activeInfo.ExpiryDate = data.ExpiryDate;
-                        var conten = 'var __activeInfo = ' + JSON.stringify(__activeInfo);
-                        callAppWritJsFile(conten, 'active.js');
+    else {
+        var urlParams = new URLSearchParams(location.search);
+        if (urlParams.get('EventId') !== null && urlParams.get('NewsId') !== null) {
+            localStorage.setItem('NewsDataFromPN', JSON.stringify({ "eventId": urlParams.get('EventId'), "newsId": urlParams.get('NewsId') }));
+        }
+        if (__activeInfo.token !== '' && moment().isSameOrBefore(moment(__activeInfo.expiry_date, 'YYYYMMDD'), 'day')) {
+            Common.showLoadingScreen();
+            axios
+                .post(Common.urlInfo.validate_token, {
+                    Token: __activeInfo.token,
+                    Date: md5(moment().format("YYYYMMDD")).toUpperCase()
+                })
+                .then(function (res) {
+                    var data = res.data;
+                    if (data.Status.ReturnCode === "00") {
+                        if (Number(data.IsValid) === 1 || Number(data.IsValid) === 2) {
+                            __activeInfo.expiry_date = data.ExpiryDate;
+                            var conten = 'var __activeInfo = ' + JSON.stringify(__activeInfo);
+                            callAppWritJsFile(conten, 'active.js');
+                            location.href = 'download_db.html';
+                        }
+                        else {
+                            Common.clearLocalStorage();
+                            Common.alertMessage(lang[Common.getUILang()]["error_msg"]["activation_code_expired"], '', showInputForm);
+                        }
+                    }
+                    else {
+                        Common.alertMessage(lang[Common.getUILang()]["error_code"][data.Status.ReturnCode], "Error Code: " + data.Status.ReturnCode, showInputForm);
+                    }
+                })
+                .catch(function (error) {
+                    if (error.message === 'Network Error') {
                         location.href = 'download_db.html';
                     }
                     else {
-                        Common.alertMessage(lang[Common.getUILang()]["error_msg"]["activation_code_expired"], '', showInputForm);
+                        console.error(error);
                     }
-                }
-                else {
-                    Common.alertMessage(lang[Common.getUILang()]["error_code"][data.Status.ReturnCode], "Error Code: " + data.Status.ReturnCode, showInputForm);
-                }
-            })
-            .catch(function (error) {
-                if (error.message === 'Network Error') {
-                    location.href = 'download_db.html';
-                }
-                else {
-                    console.error(error);
-                }
-            })
-            .finally(function () {
-                Common.hideLoadingScreen();
-            });
+                })
+                .finally(function () {
+                    Common.hideLoadingScreen();
+                });
+        }
+        else {
+            Common.clearLocalStorage();
+            window.addEventListener('load', showInputForm);
+        }
     }
-    else {
-        window.addEventListener('load', showInputForm);
-    }
-    Common.setUILanguage('login');
-    document.getElementById("tbPasscode").placeholder = lang[Common.getUILang()].login.passcode_placeholder;
 });
 
 var showInputForm = function () {
@@ -98,12 +107,13 @@ var callAppWritJsFile = function (content, fileName) {
 };
 //#endregion
 
-//#region Login Functions
+//#region Login Functions (按下submit後去API驗證passcode)
 var validateActivationCode = function () {
     if (document.getElementById('tbPasscode').value !== '') {
         if (document.getElementById('tbPasscode').value === 'for_approval') {
             localStorage.removeItem('DownloadDbMd5');
             localStorage.removeItem('Notifications')
+            localStorage.setItem('ForApproval', 'Yes');
             location.href = 'main.html';
         }
         else {
@@ -118,8 +128,8 @@ var validateActivationCode = function () {
                 })
                 .then(function (res) {
                     var data = res.data;
-                    if (data.Status.ReturnCode === "00") {
-                        if (data.IsValid === "1" || data.IsValid === "3") {
+                    if (data.Status.ReturnCode === "00") { // 00表示API回傳成功無錯誤
+                        if (data.IsValid === "1" || data.IsValid === "3") { // 1表示token有效, 3表示token有效但是要選擇取代的裝置
                             if (data.IsValid === "1") {
                                 // valid
                                 __activeInfo.token = data.Token.Code;
@@ -128,13 +138,13 @@ var validateActivationCode = function () {
                                 callAppWritJsFile(content, 'active.js');
                                 location.href = 'login-success.html';
                             } else {
-                                // valid but exceeds token quota
+                                // valid but exceeds token quota (去裝置選擇的Page)
                                 showSelectDevicePage(document.getElementById("tbPasscode").value.toString());
                             }
                         } else {
-                            if (data.IsValid === "0") {
-                                // not valid
-                                if (localStorage.getItem("ActivationCodeWrongTimes") === null) {
+                            if (data.IsValid === "0") { // 無效的token
+                                // not valid 
+                                if (localStorage.getItem("ActivationCodeWrongTimes") === null) { // 如果連續輸入錯誤三次就會彈一次訊息
                                     localStorage.setItem("ActivationCodeWrongTimes", "0");
                                 }
                                 var acwt = Number(localStorage.getItem("ActivationCodeWrongTimes")) + 1;
@@ -165,7 +175,7 @@ var validateActivationCode = function () {
 };
 //#endregion
 
-//#region Select Device Functions
+//#region Select Device Functions (選擇取代裝置的page)
 var showSelectDevicePage = function (activationCode) {
     axios
         .post(Common.urlInfo.select_device, {

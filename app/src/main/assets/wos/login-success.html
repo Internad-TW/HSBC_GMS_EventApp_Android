@@ -34,10 +34,7 @@
     <script>
       document.addEventListener("DOMContentLoaded", function() {
         Common.setUILanguage("login");
-        localStorage.removeItem("DownloadDbMd5");
-        localStorage.removeItem("Notifications");
-        localStorage.removeItem("EventLangs");
-        localStorage.removeItem("GuestName");
+        Common.clearLocalStorage();
       });
     </script>
   </body>

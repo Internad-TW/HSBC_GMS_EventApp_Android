@@ -4,6 +4,7 @@ Common.useOnlineData = false;
 Common.downloadZipLocked = false;
 
 Common.apiUrl = 'https://eventapp-uat.internad.hk/';
+//Common.apiUrl = 'http://localhost:33418/';
 
 Common.urlInfo = {
     'login': Common.apiUrl + 'ValidateActivationCode',
@@ -13,7 +14,7 @@ Common.urlInfo = {
     'download_db': Common.apiUrl + 'EventApp',
     'guest_pack': Common.apiUrl + 'GetHospitalityPackage',
     'notification': Common.apiUrl + 'SetNotification',
-    'get_all_event_data': Common.apiUrl + 'GetAllEventData'
+    'get_all_event_data': Common.apiUrl + 'GetAllEventDataV2'
 };
 
 Common.showLoadingScreen = function () {
@@ -63,10 +64,10 @@ Common.alertMessage = function (msg, title, doAfterClose) {
     elem.style.display = '';
 };
 
-Common.setUILanguage = function (page, scope) {
-    var cc = 'en';
-    if (localStorage.getItem('ui_lang') !== null) {
-        cc = localStorage.getItem('ui_lang');
+Common.setUILanguage = function (page, scope, eventId) {
+    cc = Common.getUILang();
+    if (typeof eventId !== 'undefined') {
+        cc = Common.getEventLangCode(eventId);
     }
     //
     var all;
@@ -140,10 +141,13 @@ Common.getEventLangCode = function (eventId) {
     return result;
 };
 
-Common.getLangIndex = function (event) {
+Common.getLangIndex = function (event, uiLangCode) {
     var keys = Object.keys(event).filter(function (key) { return /^Language[1-2]{1}$/.test(key); });
     var index = '1';
     var cc = Common.getEventLangCode(event.Id);
+    if (typeof uiLangCode !== 'undefined') {
+        cc = uiLangCode;
+    }
     for (var i = 0; i < keys.length; i++) {
         if (event[keys[i]] === cc) {
             index = keys[i].replace('Language', '');
@@ -162,10 +166,28 @@ Common.getDateString = function (catName, eventId, date1, date2) {
         if (catName === 'HomeTabTitleData') {
             switch (cc) {
                 case 'zh-tw':
-                    result = moment(date1).format('YYYY年M月D日') + '至' + moment(date2).format('D日');
+                    if (moment(date1).month() === moment(date2).month()) {
+                        result = moment(date1).format('YYYY年M月D日') + '至' + moment(date2).format('D日');
+                    }
+                    else {
+                        result = moment(date1).format('YYYY年M月D日') + '至' + moment(date2).format('M月D日');
+                    }
+                    break;
+                case 'zh-cn':
+                    if (moment(date1).month() === moment(date2).month()) {
+                        result = moment(date1).format('YYYY年M月D日') + '至' + moment(date2).format('D日');
+                    }
+                    else {
+                        result = moment(date1).format('YYYY年M月D日') + '至' + moment(date2).format('M月D日');
+                    }
                     break;
                 default:
-                    result = moment(date1).format('DD') + ' - ' + moment(date2).format('DD MMM YYYY');
+                    if (moment(date1).month() === moment(date2).month()) {
+                        result = moment(date1).format('D') + ' - ' + moment(date2).format('D MMM YYYY');
+                    }
+                    else {
+                        result = moment(date1).format('D MMM') + ' - ' + moment(date2).format('D MMM YYYY');
+                    }
                     break
             }
         }
@@ -174,8 +196,11 @@ Common.getDateString = function (catName, eventId, date1, date2) {
                 case 'zh-tw':
                     result = moment(date1).format('YYYY年M月D日dddd');
                     break;
+                case 'zh-cn':
+                    result = moment(date1).format('YYYY年M月D日dddd');
+                    break;
                 default:
-                    result = moment(date1).format('ddd, DD MMM, YYYY');
+                    result = moment(date1).format('ddd, D MMM, YYYY');
                     break
             }
         }
@@ -187,11 +212,39 @@ Common.getLanguageDisplayName = function (lang) {
     var result = '';
     if (lang === 'en') { result = 'English'; }
     if (lang === 'zh-tw') { result = '繁體'; }
+    if (lang === 'zh-cn') { result = '简体'; }
     return result;
 };
 
 Common.getUILang = function () {
     var ul = 'en';
+    if (localStorage.getItem('EventLangs') !== null) {
+        var els = JSON.parse(localStorage.getItem('EventLangs'));
+        if (els.length === 1) {
+            ul = els[0].Lang;
+        }
+        else {
+            if (els.filter(function (obj) { return obj.Lang === 'en'; }).length > 0) { // 只要有一個Event選了英文那UI就是英文
+                ul = 'en';
+            }
+            else { // 如果所有的Event都選擇一樣的語言則UI顯示該語言，反則UI顯示英文
+                var sameLang = true;
+                var firstLang = els[0].Lang;
+                els.forEach(function (obj) {
+                    if (firstLang !== obj.Lang) {
+                        sameLang = false;
+                    }
+                });
+                if (sameLang) {
+                    ul = firstLang;
+                }
+                else {
+                    ul = 'en';
+                }
+            }
+        }
+        localStorage.setItem('ui_lang', ul);
+    }
     if (localStorage.getItem('ui_lang') !== null) {
         ul = localStorage.getItem('ui_lang');
     }
@@ -206,4 +259,14 @@ Common.htmlDecode = function (text) {
 
 Common.getServerImagePath = function (eventCode) {
     return Common.apiUrl + 'CMS/' + eventCode + '/Uploaded/';
+};
+
+Common.clearLocalStorage = function () {
+    localStorage.removeItem("DownloadDbMd5");
+    localStorage.removeItem("Notifications");
+    localStorage.removeItem("EventLangs");
+    localStorage.removeItem("GuestName");
+    localStorage.removeItem("ui_lang");
+    localStorage.removeItem("NewsDataFromPN");
+    localStorage.removeItem("PopupNotice");
 };

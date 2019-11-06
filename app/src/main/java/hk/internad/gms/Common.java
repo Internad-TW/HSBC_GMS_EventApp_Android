@@ -36,18 +36,33 @@ public class Common {
                     if (!file.exists()) {
                         file.getParentFile().mkdirs();
                         file.createNewFile();
+                        if (filename.equals("db.js")){
+                            FileOutputStream fos = new FileOutputStream(file);
+                            byte[] buffer = new byte[1024];
+                            int byteCount = 0;
+                            while ((byteCount = is.read(buffer)) != -1) {
+                                fos.write(buffer, 0, byteCount);
+                            }
+                            fos.flush();
+                            is.close();
+                            fos.close();
+                            Log.e("copyFile",filename);
+                        }
                     }
-                    FileOutputStream fos = new FileOutputStream(file);
-                    byte[] buffer = new byte[1024];
-                    int byteCount = 0;
-                    while ((byteCount = is.read(buffer)) != -1) {
-                        fos.write(buffer, 0, byteCount);
+                    if (!filename.equals("db.js")){
+                        FileOutputStream fos = new FileOutputStream(file);
+                        byte[] buffer = new byte[1024];
+                        int byteCount = 0;
+                        while ((byteCount = is.read(buffer)) != -1) {
+                            fos.write(buffer, 0, byteCount);
+                        }
+                        fos.flush();
+                        is.close();
+                        fos.close();
+                        Log.e("copyFile",filename);
+                    }else{
+                        String test = "";
                     }
-                    fos.flush();
-                    is.close();
-                    fos.close();
-
-
                 } catch (Exception e) {   }
             }
         } catch (Exception e) {

@@ -1,8 +1,10 @@
 package hk.internad.gms;
 
+import android.app.AlertDialog;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
@@ -11,6 +13,8 @@ import android.util.Log;
 
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+
+import java.util.Map;
 
 import static hk.internad.gms.Common.writeFile;
 
@@ -29,14 +33,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.i("Service", "onMessageReceived: " + remoteMessage.getFrom());
         if (remoteMessage.getData().size() > 0) {
             Log.i("Service", "" + remoteMessage.getData());
-            String eventId  =  remoteMessage.getData().get("eventId ");
-            String newsId  = remoteMessage.getData().get("newsId ");
+            String eventId  =  remoteMessage.getData().get("eventId");
+            String newsId  = remoteMessage.getData().get("newsId");
+            String type  = remoteMessage.getData().get("type");
             String dataPath = getFilesDir().getAbsolutePath();
-            writeFile(dataPath + "/wos/Notification.txt", "login.html?EventId=" + eventId + "&NewsId=" +newsId );
+            if (type.toLowerCase() == "news"){
+                writeFile(dataPath + "/wos/Notification.txt", "login.html?EventId=" + eventId + "&NewsId=" +newsId );
+            }
         }
         if (remoteMessage.getNotification() != null) {
-            Log.i("Service", "" + remoteMessage.getNotification().getBody());
-            sendNotification(remoteMessage.getNotification().getBody());
+            Log.i("Service", "" + remoteMessage.getNotification().getTitle());
+            sendNotification(remoteMessage.getNotification().getTitle());
         }
     }
 

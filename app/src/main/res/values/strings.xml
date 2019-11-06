@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">HSBC’s World of Sport</string>
+    <string name="app_name">HSBC Events</string>
+    <string name="title_activity_browser">HSBC Events</string>
 </resources>

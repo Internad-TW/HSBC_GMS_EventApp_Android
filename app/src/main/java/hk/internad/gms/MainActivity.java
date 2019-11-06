@@ -1,9 +1,14 @@
 package hk.internad.gms;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.Context;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.net.MailTo;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -24,17 +29,22 @@ import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.net.URLConnection;
+import java.util.zip.ZipEntry;
+import java.util.zip.ZipInputStream;
+
 import static hk.internad.gms.Common.copyFilesAssets;
 import static hk.internad.gms.Common.readFile;
 import static hk.internad.gms.Common.readInStream;
-import static hk.internad.gms.Common.unpackZip;
 import static hk.internad.gms.Common.writeFile;
 
 public class MainActivity extends Activity {
@@ -55,11 +65,32 @@ public class MainActivity extends Activity {
         writeDeviceJS();
         writeNotificationJS();
         String NotificationURL =  readFile(dataPath + "/wos/Notification.txt");
+
         if ( NotificationURL != ""){
             webview.loadUrl("file:///"+ dataPath + "/wos/" + NotificationURL);
+            File file = new File(dataPath + "/wos/Notification.txt");
+            if (file.exists()) {
+                file.delete();
+            }
         }else{
             webview.loadUrl("file:///"+ dataPath + "/wos/login.html");
         }
+
+        //showPop(NotificationURL);
+    }
+
+    private void showPop(String message){
+        new AlertDialog.Builder(MainActivity.this)
+                .setTitle("test")//設定視窗標題
+                .setIcon(R.mipmap.ic_launcher)//設定對話視窗圖示
+                .setMessage(message)//設定顯示的文字
+                .setPositiveButton("關閉視窗",new DialogInterface.OnClickListener(){
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.cancel();
+                    }
+                })//設定結束的子視窗
+                .show();//呈現對話視窗
     }
 
     private void copyHtml(){
@@ -88,7 +119,8 @@ public class MainActivity extends Activity {
         webview.getSettings().setGeolocationDatabasePath(getFilesDir().getPath());
         webview.getSettings().setMediaPlaybackRequiresUserGesture(false);
         webview.addJavascriptInterface(new JavaScriptInterface(), "android");
-
+        webview.setVerticalScrollBarEnabled(false);
+        webview.setHorizontalScrollBarEnabled(false);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
             WebView.setWebContentsDebuggingEnabled(true);
         }
@@ -99,7 +131,6 @@ public class MainActivity extends Activity {
                 return true;
             }
         });
-
     }
 
     @Override
@@ -109,7 +140,7 @@ public class MainActivity extends Activity {
                 case KeyEvent.KEYCODE_BACK:
                     if (webview.canGoBack()) {
                         String webUrl = webview.getOriginalUrl();
-                        if (webUrl.contains("main.html#EventList")){
+                        if (webUrl.contains("?HP")){
                             return  false;
                         }
                         webview.goBack();
@@ -135,6 +166,30 @@ public class MainActivity extends Activity {
             catch(JSONException e) {
                 e.printStackTrace();
             }
+        }
+
+        @JavascriptInterface
+        public void openBrowserInApp(String URL) throws IOException {
+            if (URL.startsWith("mailto:")) {
+                    MailTo mt = MailTo.parse(URL);
+                    Intent i = newEmailIntent( mt.getTo(), mt.getSubject(), mt.getBody(), mt.getCc());
+                    startActivity(i);
+            }
+            else{
+                Intent i = new Intent(MainActivity.this, BrowserActivity.class);
+                i.putExtra(BrowserActivity.WEBSITE_ADDRESS, URL);
+                startActivity(i);
+            }
+        }
+
+        private Intent newEmailIntent(String address, String subject, String body, String cc) {
+            Intent intent = new Intent(Intent.ACTION_SEND);
+            intent.putExtra(Intent.EXTRA_EMAIL, new String[] { address });
+            intent.putExtra(Intent.EXTRA_TEXT, body);
+            intent.putExtra(Intent.EXTRA_SUBJECT, subject);
+            intent.putExtra(Intent.EXTRA_CC, cc);
+            intent.setType("message/rfc822");
+            return intent;
         }
 
         @JavascriptInterface
@@ -246,6 +301,52 @@ public class MainActivity extends Activity {
                 return e.fillInStackTrace().toString();
             }
             return "success";
+        }
+
+        public void unpackZip(String path, String zipname) throws Exception
+        {
+            InputStream is;
+            ZipInputStream zis;
+
+            String filename;
+            is = new FileInputStream(path + zipname);
+            zis = new ZipInputStream(new BufferedInputStream(is));
+            ZipEntry ze;
+            byte[] buffer = new byte[1024];
+            int count;
+
+            while ((ze = zis.getNextEntry()) != null)
+            {
+                filename = ze.getName();
+
+                // Need to create directories if not exists, or
+                // it will generate an Exception...
+                if (ze.isDirectory()) {
+                    File fmd = new File(path + filename);
+                    fmd.mkdirs();
+                    continue;
+                }else{
+                    File file = new File(path +filename);
+                    if (!file.exists()) {
+                        file.getParentFile().mkdirs();
+                        file.createNewFile();
+                    }
+                }
+
+                FileOutputStream fout = new FileOutputStream(path + filename);
+
+                while ((count = zis.read(buffer)) != -1)
+                {
+                    fout.write(buffer, 0, count);
+                }
+
+                fout.close();
+                zis.closeEntry();
+                Log.e("unpackZip", filename);
+            }
+
+            zis.close();
+
         }
 
         protected void onProgressUpdate(String... progress) {
