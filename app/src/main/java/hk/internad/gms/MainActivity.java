@@ -64,19 +64,8 @@ public class MainActivity extends Activity {
         setWebView();
         writeDeviceJS();
         writeNotificationJS();
-        String NotificationURL =  readFile(dataPath + "/wos/Notification.txt");
-
-        if ( NotificationURL != ""){
-            webview.loadUrl("file:///"+ dataPath + "/wos/" + NotificationURL);
-            File file = new File(dataPath + "/wos/Notification.txt");
-            if (file.exists()) {
-                file.delete();
-            }
-        }else{
-            webview.loadUrl("file:///"+ dataPath + "/wos/login.html");
-        }
-
         //showPop(NotificationURL);
+        webview.loadUrl("file:///"+ dataPath + "/wos/login.html");
     }
 
     private void showPop(String message){
@@ -196,6 +185,20 @@ public class MainActivity extends Activity {
         public void downloadZip(String zipPath) throws IOException {
             new DownloadFileFromURL(dataPath + "/wos/data/db.zip").execute(zipPath);
         }
+
+        @JavascriptInterface
+        public void checkAdhocMessage(String Message) throws IOException {
+            String NotificationJson =  readFile(dataPath + "/wos/Notification.txt");
+            if ( NotificationJson != ""){
+                webview.evaluateJavascript("doAfterCheckAdhocMessage('" + NotificationJson + "')", null);
+                File file = new File(dataPath + "/wos/Notification.txt");
+                if (file.exists()) {
+                    file.delete();
+                }
+            }
+        }
+
+
     }
 
     private  void writeNotificationJS(){
@@ -287,7 +290,6 @@ public class MainActivity extends Activity {
                 int BufferSize = 0;
                 OutputStream os = new FileOutputStream(fileName);
                 while ((len = is.read(bs)) != -1) {
-
                     os.write(bs, 0, len);
                     BufferSize += len;
                     publishProgress(String.valueOf((BufferSize * 100) / contentLength));

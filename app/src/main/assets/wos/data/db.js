@@ -232,7 +232,8 @@ var db = {
                 "Heading2": "一二三",
                 "Message1": "Content",
                 "Message2": "內容",
-                "PublishDate": "2019-10-30"
+                "PublishDate": "2019-10-30",
+                "GUID": "1234"
             }
         },
         {

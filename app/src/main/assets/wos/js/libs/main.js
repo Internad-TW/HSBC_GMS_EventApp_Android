@@ -98,15 +98,16 @@ var checkEvents = function () {
                 Common.openPage('Empty');
             }
             else {
+                checkNotificationPushSetting();
+                //
                 if (localStorage.getItem('NewsDataFromPN') !== null) {
                     var news = JSON.parse(localStorage.getItem('NewsDataFromPN'));
                     localStorage.removeItem('NewsDataFromPN');
                     showNewsDetailFromPushNotification(news.eventId, news.newsId);
                 }
                 else {
-                    gotoEventListOrHomeTab();
+                    checkAdhocMessage();
                 }
-                checkNotificationPushSetting();
                 //set button
                 var events = getValidEvents();
                 [...document.querySelectorAll('[data-button=BackToEventListButton]')].forEach(function (elem) {
@@ -267,7 +268,7 @@ var gotoHomeTabPageContent = function (elem, reloadData) {
         }
     }
     if (typeof reloadData === 'undefined') { reloadData = false; }
-    checkAdhocMessage(eventId);
+    if (localStorage.getItem('IsAdhocShowing') === 'N') { showPopupNotice(eventId); }
     getHomeTabData(eventId);
     //
     if (!reloadData) {
@@ -1425,12 +1426,13 @@ var getValidEvents = function () {
             }
         });
     }
-    el = el.map(function (obj) {
+    var tmp = [];
+    el.forEach(function (obj) {
         if (events.filter(function (obj2) { return Number(obj.Id) === Number(obj2.Id); }).length > 0) {
-            return obj;
+            tmp.push(obj);
         }
     });
-    localStorage.setItem('EventLangs', JSON.stringify(el));
+    localStorage.setItem('EventLangs', JSON.stringify(tmp));
     //init popup notice
     var pn;
     if (localStorage.getItem('PopupNotice') === null) {
@@ -1451,13 +1453,21 @@ var getValidEvents = function () {
             }
         });
     }
-    pn = pn.map(function (obj) {
-        var event = events.filter(function (obj2) { return Number(obj.Id) === Number(obj2.Id); });
-        if (event.length > 0 && event[0].PopupNotice !== null) {
-            return obj;
+    if (pn.length > 0) {
+        pn = pn.filter(function (obj) {
+            var event = events.filter(function (obj2) { return Number(obj.Id) === Number(obj2.Id); });
+            return (event.length > 0 && event[0].PopupNotice !== null);
+        });
+        if (pn.length > 0) {
+            localStorage.setItem('PopupNotice', JSON.stringify(pn));
         }
-    });
-    localStorage.setItem('PopupNotice', JSON.stringify(pn));
+        else {
+            localStorage.removeItem('PopupNotice');
+        }
+    }
+    else {
+        localStorage.removeItem('PopupNotice');
+    }
     return events;
 };
 
@@ -1619,8 +1629,7 @@ var showPopupNotice = function (eventId) {
     }
 };
 
-var checkAdhocMessage = function(eventId) {
-    localStorage.setItem('EventId', eventId.toString());
+var checkAdhocMessage = function () {
     if (__deviceInfo.OS.toLowerCase() === "android") {
         android.checkAdhocMessage('');
     } else if (__deviceInfo.OS.toLowerCase() === "ios") {
@@ -1631,23 +1640,21 @@ var checkAdhocMessage = function(eventId) {
     }
 };
 
-var doAfterCheckAdhocMessage = function(msg) {
-    var eventId = Number(localStorage.getItem('EventId'));
+var doAfterCheckAdhocMessage = function (msg) {
     if (msg === '') {
-        showPopupNotice(eventId);
+        localStorage.setItem('IsAdhocShowing', 'N');
+        gotoEventListOrHomeTab();
     }
     else {
+        localStorage.setItem('IsAdhocShowing', 'Y');
         var data = JSON.parse(msg);
-        if (Number(data.id) === eventId) {
-            data.message = data.message.replace(/\|\#1\#\|/ig, '\\');
-            data.message = data.message.replace(/\|\#2\#\|/ig, '\"');
-            data.message = data.message.replace(/\|\#3\#\|/ig, '\'');
-            var func = function() { showPopupNotice(eventId); };
-            Common.alertMessage(data.message, '', func);
-        }
-        else {
-            showPopupNotice(eventId);
-        }
+        document.getElementById('G_EventId').value = data.id.toString();
+        gotoHomeTabPageContent();
+        data.message = data.message.replace(/\|\#1\#\|/ig, '\\');
+        data.message = data.message.replace(/\|\#2\#\|/ig, '\"');
+        data.message = data.message.replace(/\|\#3\#\|/ig, '\'');
+        var func = function () { showPopupNotice(data.id); };
+        Common.alertMessage(data.message, '', func);
     }
 };
 //#endregion

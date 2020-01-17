@@ -88,7 +88,7 @@ var processAjaxError = function (err) {
         Common.alertMessage(lang[Common.getUILang()]["error_msg"]["net_fail"]);
     }
     else {
-        console.error(err);
+        console.error(err);downloadZip
     }
 };
 

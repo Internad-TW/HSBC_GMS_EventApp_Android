@@ -36,9 +36,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             String eventId  =  remoteMessage.getData().get("eventId");
             String newsId  = remoteMessage.getData().get("newsId");
             String type  = remoteMessage.getData().get("type");
+            String Title  =   remoteMessage.getNotification().getTitle();
+            Title.replace("\\","|#1#|");
+            Title.replace("\"","|#2#|");
+            Title.replace("\'","|#3#|");
             String dataPath = getFilesDir().getAbsolutePath();
             if (type.toLowerCase() == "news"){
-                writeFile(dataPath + "/wos/Notification.txt", "login.html?EventId=" + eventId + "&NewsId=" +newsId );
+                writeFile(dataPath + "/wos/Notification.txt", "{\"id\":" + eventId + ", \"message\": \"" + Title + "\"}");
             }
         }
         if (remoteMessage.getNotification() != null) {

@@ -39,10 +39,10 @@ Common.alertMessage = function (msg, title, doAfterClose) {
         var strHtml = '\
             <div id="AlertScreen" class="alert flex_container flex_v_center"\
                 style="display: none;">\
-                <div class="alert_message_box width80per">\
-                    <div class="alert_title"></div>\
-                    <div class="lineheight135per"></div>\
-                    <div class="btn_red margintop20px" data-button><p>OK</p></div>\
+                <div class="alert_message_box width90per">\
+                    <div id="Alert_Title" class="alert_title text_center"></div>\
+                    <div id="Alert_Content" class="lineheight150per fontsize90per"></div>\
+                    <div class="btn_red margintop20px" data-button><p>Close</p></div>\
                 </div>\
             </div>';
         document.querySelector('body').insertAdjacentHTML('beforeend', strHtml);
@@ -55,12 +55,12 @@ Common.alertMessage = function (msg, title, doAfterClose) {
         }
     });
     if (title === '') {
-        elem.querySelector('.alert_title').style.display = 'none';
+        elem.querySelector('#Alert_Title').style.display = 'none';
     }
     else {
-        elem.querySelector('.alert_title').innerText = title;
+        elem.querySelector('#Alert_Title').innerText = title;
     }
-    elem.querySelector('.lineheight135per').innerHTML = msg;
+    elem.querySelector('#Alert_Content').innerHTML = msg;
     elem.style.display = '';
 };
 
